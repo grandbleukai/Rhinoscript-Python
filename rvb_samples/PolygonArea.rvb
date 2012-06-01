@@ -1,0 +1,40 @@
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' PolygonArea.rvb -- November 2003
+' If this code works, it was written by Dale Fugier.
+' If not, I don't know who wrote it.
+' Works with Rhino 4.0.
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Option Explicit
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Sub PolygonArea
+  Dim obj, pt_list, area
+  obj = Rhino.GetObject("Select closed planar polyline", 4)
+  If VarType(obj) = vbString Then
+    If Rhino.IsPolyline(obj) And Rhino.IsCurveClosed(obj) And Rhino.IsCurvePlanar(obj) Then
+      pt_list = Rhino.PolylineVertices(obj)
+      ReDim Preserve pt_list(UBound(pt_list)+1)
+      pt_list(UBound(pt_list)) = p_list(UBound(pt_list)-1)
+      area = CalcPolygonArea(pt_list)
+      msgbox cstr(area)
+    End If
+  End If
+End Sub
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Function CalcPolygonArea( pt_list )
+  Dim area, count, pt1, pt2, i, j
+  area = 0.0
+  count = UBound(pt_list)
+
+  For i = 0 To count
+    j = (i + 1) Mod count
+    pt1 = pt_list(i)
+    pt2 = pt_list(j)
+    area = area + pt1(0) * pt2(1)
+    area = area - pt1(1) * pt2(0)
+  Next
+
+  CalcPolygonArea = Abs(area / 2)
+
+End Function
